@@ -4,11 +4,15 @@ import os
 import datetime
 from pathlib import Path
 
-# Directory to store logs
+# Directories
 LOG_DIR = Path("./chronolog")
+LOCALDOCS_DIR = Path("./localdocs")
+OBSIDIAN_DIR = Path("./obsidian_vault")  # Optional
 LOG_DIR.mkdir(exist_ok=True)
+LOCALDOCS_DIR.mkdir(exist_ok=True)
+OBSIDIAN_DIR.mkdir(exist_ok=True)
 
-# Log format template
+# Create log entry in .jsonl format
 def create_log_entry(tags, topic, content):
     timestamp = datetime.datetime.now().isoformat()
     return {
@@ -18,16 +22,40 @@ def create_log_entry(tags, topic, content):
         "content": content
     }
 
-# Save a single log
-def log_memory(tags, topic, content):
+# Save a structured log and archive it as Markdown
+def log_memory(tags, topic, content, save_md=True):
     log = create_log_entry(tags, topic, content)
+
+    # Save JSONL log
     filename = f"{datetime.datetime.now().strftime('%Y-%m-%d')}.jsonl"
     filepath = LOG_DIR / filename
     with open(filepath, "a", encoding="utf-8") as f:
         f.write(json.dumps(log) + "\n")
+
+    # Optional Markdown save
+    if save_md:
+        save_markdown(topic, content, tags)
+
     print(f"✅ Logged: {topic} [{', '.join(tags)}] at {log['timestamp']}")
 
-# Load logs by keyword or date
+# Write Markdown memory to both localdocs and obsidian
+def save_markdown(topic, content, tags):
+    timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    filename = f"{timestamp}_{topic.replace(' ', '_')}.md"
+    tag_line = " ".join(f"#{tag}" for tag in tags)
+    header = f"# 🧠 {topic}\n\n**Tags:** {tag_line}  \n**Saved:** {timestamp}\n\n---\n\n"
+
+    full_text = header + content
+
+    # Save to localdocs
+    with open(LOCALDOCS_DIR / filename, "w", encoding="utf-8") as f:
+        f.write(full_text)
+
+    # Save to obsidian
+    with open(OBSIDIAN_DIR / filename, "w", encoding="utf-8") as f:
+        f.write(full_text)
+
+# Recall logs by keyword or date
 def recall_logs(keyword=None, date=None):
     logs = []
     files = [LOG_DIR / f"{date}.jsonl"] if date else LOG_DIR.glob("*.jsonl")
@@ -39,7 +67,7 @@ def recall_logs(keyword=None, date=None):
                     logs.append(entry)
     return logs
 
-# Simple CLI for manual testing
+# CLI
 if __name__ == "__main__":
     import sys
     if sys.argv[1] == "log":
