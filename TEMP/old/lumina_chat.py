@@ -2,7 +2,9 @@
 import streamlit as st
 from pathlib import Path
 import json
-from lumina_chat import chat_with_lumina
+from langchain.vectorstores import Chroma
+from langchain.embeddings import GPT4AllEmbeddings
+from langchain.llms import GPT4All
 
 # Init
 st.set_page_config(page_title="💜 Lumina WebUI – Memory Portal", layout="wide")
@@ -38,7 +40,16 @@ st.markdown("## 💬 Chat with Lumina")
 user_input = st.text_input("🧠 Your message:", placeholder="Ask Lumina anything...")
 
 if user_input:
+    # Init the model
+    llm = GPT4All(
+        model="Nous-Hermes-2-Mistral-7B-DPO.Q4_0.gguf",
+        model_path="E:/GPT4All",
+        backend="gptj",  # or "llama" depending on the model file
+        verbose=False
+    )
+
+    # Get response
     with st.spinner("✨ Thinking..."):
-        response = chat_with_lumina(user_input)
+        response = llm(user_input)
         st.success("🦋 Lumina says:")
         st.write(response)

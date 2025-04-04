@@ -1,0 +1,26 @@
+# Python cache and metadata
+__pycache__/
+*.pyc
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Memory and logs
+memory_db/
+chronolog/
+*.sqlite3
+*.jsonl
+
+# Large model files
+*.gguf
+*.bin
+
+# Logs & temp files
+*.log
+*.tmp
+*.bak
+
+# VS Code settings
+.vscode/
