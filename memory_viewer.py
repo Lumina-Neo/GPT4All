@@ -1,13 +1,10 @@
 # memory_viewer.py
+
 import os
 import json
 from pathlib import Path
-import datetime
 
 LOG_DIR = Path("./chronolog")
-if not LOG_DIR.exists():
-    print("⚠️ No memory log found.")
-    exit()
 
 def load_logs():
     logs = []
@@ -17,7 +14,7 @@ def load_logs():
                 try:
                     logs.append(json.loads(line.strip()))
                 except json.JSONDecodeError:
-                    pass
+                    continue
     return logs
 
 def print_logs(logs):
@@ -29,9 +26,11 @@ def print_logs(logs):
         print(f"🗓️  {entry['timestamp']}")
         print(f"🏷️  Tags: {', '.join(entry['tags'])}")
         print(f"🧠 Topic: {entry['topic']}")
-        print(f"📜 Content:\n{entry['content']}")
-        print()
+        print(f"📜 Content:\n{entry['content']}\n")
 
 if __name__ == "__main__":
-    logs = load_logs()
-    print_logs(logs)
+    if not LOG_DIR.exists():
+        print("⚠️ No memory log directory found.")
+    else:
+        logs = load_logs()
+        print_logs(logs)

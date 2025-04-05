@@ -1,20 +1,31 @@
-from langchain_community.vectorstores import Chroma
+# main_memory_embedder.py
+
+from memory_summary import MAIN_MEMORY_SUMMARY
+from langchain_chroma import Chroma
+from langchain_core.documents import Document
 from langchain_community.embeddings import GPT4AllEmbeddings
-from langchain_community.document_loaders import TextLoader
+from datetime import datetime
 
-# Step 1: Set file path to your memory summary
-file_path = "E:/GPT4All/First Collection/Main Memory Chat Backup Full Summary.txt"
+# 🧠 Config
+CHROMA_PATH = "./memory_db"
+embedding_fn = GPT4AllEmbeddings(client=None)
+vectordb = Chroma(persist_directory=CHROMA_PATH, embedding_function=embedding_fn)
 
-# Step 2: Load the document
-loader = TextLoader(file_path, encoding='utf-8')
-documents = loader.load()
+# 🧾 Flatten memory dict into documents
+def flatten_summary(summary):
+    documents = []
+    for section, entries in summary.items():
+        for bullet in entries:
+            documents.append(
+                Document(
+                    page_content=f"{section}: {bullet}",
+                    metadata={"section": section, "timestamp": datetime.utcnow().isoformat()}
+                )
+            )
+    return documents
 
-# Step 3: Set up the embedding model
-embeddings = GPT4AllEmbeddings()
+# 💾 Store in vector DB
+docs = flatten_summary(MAIN_MEMORY_SUMMARY)
+vectordb.add_documents(docs)
 
-# Step 4: Connect to ChromaDB
-vectordb = Chroma.from_documents(documents, embeddings, persist_directory="./memory_db")
-
-# Step 5: Save the embedded memory
-vectordb.persist()
-print("✅ Main memory summary embedded successfully into vector memory.")
+print("✅ Summary memory embedded into ChromaDB.")

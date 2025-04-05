@@ -1,4 +1,6 @@
+# memory_viewer_cli.py
 import json
+from datetime import datetime
 
 MEMORY_FILE = "memory.json"
 
@@ -7,7 +9,7 @@ def load_memory():
         with open(MEMORY_FILE, "r", encoding="utf-8") as f:
             return json.load(f)
     except FileNotFoundError:
-        print("Memory file not found.")
+        print("⚠️ Memory file not found.")
         return {}
 
 def display_section(title, items):
