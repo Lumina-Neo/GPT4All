@@ -1,26 +1,26 @@
-# Python cache and metadata
+# Bytecode and cache
 __pycache__/
-*.pyc
+*.py[cod]
+*.pyo
 
 # Virtual environments
-.venv/
-venv/
-env/
+*.env
+.env/
+langchain_env/
 
-# Memory and logs
-memory_db/
-chronolog/
-*.sqlite3
-*.jsonl
-
-# Large model files
-*.gguf
-*.bin
-
-# Logs & temp files
-*.log
-*.tmp
-*.bak
-
-# VS Code settings
+# VSCode workspace
 .vscode/
+*.code-workspace
+
+# Memory DB and Chroma
+memory_db/
+*.sqlite3
+
+# Logs and local markdown
+chronolog/
+localdocs/
+obsidian_vault/
+
+# Misc
+*.log
+.DS_Store
