@@ -12,17 +12,17 @@ embedding_fn = GPT4AllEmbeddings(client=None)
 vectordb = Chroma(persist_directory=CHROMA_PATH, embedding_function=embedding_fn)
 splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
 
-def write_memory(topic: str, tags: list[str], content: str):
+def write_memory(topic, tags, content):
     timestamp = datetime.utcnow().isoformat()
     metadata = {
-        "topic": topic,
-        "tags": tags,
         "timestamp": timestamp,
+        "tags": ", ".join(tags),  # ✅ Fix: tags as a string
+        "topic": topic
     }
     doc = Document(page_content=content, metadata=metadata)
     chunks = splitter.split_documents([doc])
     vectordb.add_documents(chunks)
-    print(f"✅ Memory written: {topic} [{', '.join(tags)}] at {timestamp}")
+    print(f"✅ Logged: {topic} [{', '.join(tags)}] at {timestamp}")
 
 # 🧪 Example usage
 if __name__ == "__main__":

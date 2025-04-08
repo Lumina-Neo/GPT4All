@@ -13,7 +13,7 @@ vectordb = Chroma(persist_directory=CHROMA_PATH, embedding_function=embedding_fn
 retriever = VectorStoreRetriever(vectorstore=vectordb)
 
 def read_memory(query: str, top_k: int = 5):
-    results = retriever.get_relevant_documents(query)
+    results = retriever.invoke(query)
     if not results:
         print("⚠️ No relevant memory found.")
     else:
